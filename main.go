@@ -43,7 +43,8 @@ func main() {
 
 	b, err := json.Marshal(bundledParsedValues)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("failed marshal results, error: %s'", err.Error())
+		fmt.Printf("%+v\n", bundledParsedValues)
 		return
 	}
 	fmt.Println(string(b))
