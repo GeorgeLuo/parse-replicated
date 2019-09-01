@@ -1,0 +1,13 @@
+# used to initialize volume mounted dev environment
+# run with
+#  'sudo docker build -t parse-replicated --file Dockerfile.dev .'
+#  'sudo docker run --volume "$(pwd)":/go/src/github.com/GeorgeLuo/parse-replicated --interactive --tty --net=host parse-replicated'
+
+FROM golang
+
+ADD . /go/src/github.com/GeorgeLuo/parse-replicated
+
+WORKDIR /go/src/github.com/GeorgeLuo/parse-replicated
+
+# Set default run command
+CMD ["bash"]
