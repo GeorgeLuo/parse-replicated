@@ -19,7 +19,7 @@ func GenerateBundleParsedValues(parseMap map[string]*FileParams) (BundleParsedVa
 
 		switch fileParam.Format {
 		case "loadavg":
-			loadAverage, err := ParseLoadAverage15Min(fileParam.File)
+			loadAverage, err := parseLoadAverage15Min(fileParam.File)
 			if err != nil {
 				errors = append(errors, err)
 			} else {
@@ -27,7 +27,7 @@ func GenerateBundleParsedValues(parseMap map[string]*FileParams) (BundleParsedVa
 			}
 			continue
 		case "df":
-			diskUsage, err := ParseDiskUsage(fileParam.File)
+			diskUsage, err := parseDiskUsage(fileParam.File)
 			if err != nil {
 				errors = append(errors, err)
 			} else {
@@ -36,7 +36,7 @@ func GenerateBundleParsedValues(parseMap map[string]*FileParams) (BundleParsedVa
 			continue
 		case "json":
 			for _, param := range fileParam.ParseForParams {
-				value, err := ParseJSONForValue(fileParam.File, param)
+				value, err := parseJSONForValue(fileParam.File, param)
 				if err != nil {
 					errors = append(errors, err)
 				} else {
@@ -46,7 +46,7 @@ func GenerateBundleParsedValues(parseMap map[string]*FileParams) (BundleParsedVa
 						parsedBundle.DockerStorageDriver = value
 					} else if param == "OperatingSystem" {
 						parsedBundle.HostOS, parsedBundle.HostOSVersion, err =
-							ParseOperatingSystem(value)
+							parseOperatingSystem(value)
 						if err != nil {
 							errors = append(errors, err)
 						}
@@ -56,7 +56,7 @@ func GenerateBundleParsedValues(parseMap map[string]*FileParams) (BundleParsedVa
 			continue
 		case "cpuinfo":
 			for _, param := range fileParam.ParseForParams {
-				value, err := ParseCpuinfoForInt(fileParam.File, param)
+				value, err := parseCpuinfoForInt(fileParam.File, param)
 				if err != nil {
 					errors = append(errors, err)
 				} else {
@@ -71,7 +71,7 @@ func GenerateBundleParsedValues(parseMap map[string]*FileParams) (BundleParsedVa
 }
 
 // ParseDiskUsage parses df output and finds summation of disk usage.
-func ParseDiskUsage(dfOut *string) (float64, error) {
+func parseDiskUsage(dfOut *string) (float64, error) {
 	splitByLines := strings.Split(*dfOut, "\n")
 	l := len(splitByLines)
 	var used float64
@@ -88,16 +88,16 @@ func ParseDiskUsage(dfOut *string) (float64, error) {
 	return used, nil
 }
 
-// ParseLoadAverage15Min returns the 3rd column of the ld output.
+// ParseLoadAverage15Min returns the 3rd column of the loadavg output.
 // TODO: map column to timespan for generic method
-func ParseLoadAverage15Min(loadavgOut *string) (float64, error) {
+func parseLoadAverage15Min(loadavgOut *string) (float64, error) {
 	loadVals := strings.Fields(*loadavgOut)
 	return strconv.ParseFloat(loadVals[2], 64)
 }
 
 // ParseJSONForValue is a generic parser for key in json file.
 // TODO: pass a slice of values to parse for.
-func ParseJSONForValue(jsonString *string, key string) (string, error) {
+func parseJSONForValue(jsonString *string, key string) (string, error) {
 	var jsonMap map[string]interface{}
 	json.Unmarshal([]byte(*jsonString), &jsonMap)
 	if val, ok := jsonMap[key].(string); ok {
@@ -110,7 +110,7 @@ func ParseJSONForValue(jsonString *string, key string) (string, error) {
 
 // ParseOperatingSystem returns the Host OS and OS version from a full
 // OperatingSystem denomination.
-func ParseOperatingSystem(hostString string) (string, string, error) {
+func parseOperatingSystem(hostString string) (string, string, error) {
 
 	var idx int
 	if idx = strings.IndexByte(hostString, ' '); idx < 0 {
@@ -133,12 +133,12 @@ func ParseOperatingSystem(hostString string) (string, string, error) {
 // ParseCpuinfoForInt returns the queried value from the cpuinfo file.
 // This function will return the total of whatever parameter is queried.
 // TODO: pass a slice of values to parse for, return an interface.
-func ParseCpuinfoForInt(cpuinfo *string, param string) (int, error) {
+func parseCpuinfoForInt(cpuinfo *string, param string) (int, error) {
 	splitByLines := strings.Split(*cpuinfo, "\n")
 	l := len(splitByLines)
 	var total int
 
-	for idx, line := range splitByLines[1 : l-1] {
+	for idx, line := range splitByLines[0 : l-1] {
 		s := strings.Split(line, ":")
 		if strings.TrimSpace(s[0]) == "cpu cores" {
 			var cores int
