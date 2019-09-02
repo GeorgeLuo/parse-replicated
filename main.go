@@ -53,7 +53,8 @@ func main() {
 // ParamsFromTar takes a reader to a tar file and the schema in the form of
 // fileMap and returns the values delimited by fileMap. This is the logical
 // access point of the program.
-func ParamsFromTar(fileMap *map[string]*environment.FileParams, r io.Reader) (environment.BundleParsedValues, []error) {
+func ParamsFromTar(fileMap *map[string]*environment.FileParams,
+	r io.Reader) (environment.BundleParsedValues, []error) {
 	err := environment.GetFromUntarFiles(fileMap, r)
 	if err != nil {
 		return *new(environment.BundleParsedValues), []error{err}

@@ -1,0 +1,5 @@
+Filesystem     1K-blocks    Used Available Use% Mounted on
+proc                   0       1         0    - /proc
+tmpfs                  0      10     65536   0% /dev
+devpts                 0     100         0    - /dev/pts
+sysfs                  0    1000         0    - /sys

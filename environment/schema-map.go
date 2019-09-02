@@ -8,15 +8,6 @@ import (
 )
 
 // BundleParsedValues is the output of the program.
-// Host OS: default/proc/version
-// Host OS version: default/proc/version
-// Number of cores: default/proc/cpuinfo
-// Load average in seconds over the past 15 minutes: default/commands/loadavg/loadavg
-//   0.75 0.35 0.25 (want this) 1/25 1747
-// Disk usage in bytes on the root device: default/commands/df/stdout
-// Docker version: default/docker/docker_version.json
-// Docker storage driver: default/docker/docker_info.json
-//   "Driver": "overlay2"
 type BundleParsedValues struct {
 	HostOS              string  `json:"host_os"`
 	HostOSVersion       string  `json:"host_os_version,omitempty"`
@@ -29,9 +20,12 @@ type BundleParsedValues struct {
 
 // FileParams encapsulates a target file by path.
 type FileParams struct {
+	// indicates the fields of importance.
 	ParseForParams []string
-	Format         string
-	File           *string
+	// indicates the approach of the parsing function.
+	Format string
+	// the contents of the file
+	File *string
 }
 
 // GetFromUntarFiles takes a tar file and produces a map of file names
